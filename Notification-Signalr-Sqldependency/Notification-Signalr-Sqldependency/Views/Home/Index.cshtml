@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<script src="/Scripts/jquery-1.10.2.min.js"></script>
+<script src="/Scripts/jquery.signalR-2.2.1.min.js"></script>
+<script src="~/signalr/hubs" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+
+        var job = $.connection.notificationHub;
+        job.client.displayStatus = function () {
+            getData();
+        };
+
+        // Start the connection
+        $.connection.hub.start();
+        getData();
+    });
+
+    function getData() {
+        var $tbl = $('#tblJobInfo');
+        $.ajax({
+            url: '../api/APINotification',
+            type: 'GET',
+            datatype: 'json',
+            success: function (data) {
+                if (data.length > 0) {
+                    $tbl.empty();
+                    $tbl.append(' <tr><th>ID</th><th>Text</th><th>User</th></tr>');
+                    var rows = [];
+                    for (var i = 0; i < data.length; i++) {
+                        rows.push(' <tr><td>' + data[i].ID + '</td><td>' + data[i].Text + '</td><td>' + data[i].UserID + '</td></tr>');
+                    }
+                    $tbl.append(rows.join(''));
+                }
+            }
+        });
+    }
+</script>
+
+<div>
+    <table id="tblJobInfo" style="text-align:center;margin-left:10px"></table>
+</div>
